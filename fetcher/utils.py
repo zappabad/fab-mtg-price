@@ -12,9 +12,10 @@ class TCGPlayerFetcher:
     """A class to fetch data from the TCGPlayer API."""
     def __init__(self, query, cache_duration_days=7):
         self.url = "https://mp-search-api.tcgplayer.com/v1/search/request"
+        self.cache_folder = "cache_data"
         self.query = query
         self.cache_duration_days = cache_duration_days
-        self.cache_file = f"{self.query}_cache.json"
+        self.cache_file = f"{self.cache_folder}/{self.query}_cache.json"
         self.params = {
             "q": query,
             "isList": "false",
