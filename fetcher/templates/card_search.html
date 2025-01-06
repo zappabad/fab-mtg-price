@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Card Search</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>Search for a Card</h1>
+    {% csrf_token %}
+    <input type="text" id="cardName" placeholder="Enter card name">
+    <button id="searchButton">Search</button>
+    <div id="result"></div>
+
+    <script>
+        $(document).ready(function() {
+            $('#searchButton').click(function() {
+                var cardName = $('#cardName').val();
+                if (!cardName) {
+                    alert('Please enter a card name');
+                    return;
+                }
+
+                $.ajax({
+                    url: '/fetcher/api/cards/',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ query: cardName }),
+                    success: function(response) {
+                        $('#result').html('<p>Data fetched and saved successfully</p>');
+                    },
+                    error: function(xhr) {
+                        if (xhr.status === 400) {
+                            $('#result').html('<p>Error: ' + xhr.responseJSON.error + '</p>');
+                        } else {
+                            $('#result').html('<p>An error occurred</p>');
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

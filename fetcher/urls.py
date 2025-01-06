@@ -1,11 +1,12 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import CardDataViewSet, PriceDataViewSet
+from .views import CardDataViewSet, PriceDataViewSet, card_search_view
 
 router = DefaultRouter()
 router.register(r'cards', CardDataViewSet, basename='carddata')
 router.register(r'prices', PriceDataViewSet, basename='pricedata')
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path('api/', include(router.urls)),
+    path('', card_search_view, name='card_search'),
 ]

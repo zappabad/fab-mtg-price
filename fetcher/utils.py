@@ -4,6 +4,9 @@ import os
 import json
 import logging
 from datetime import datetime, timedelta
+from django.conf import settings
+
+BASE_DIR = settings.BASE_DIR
 
 # Set up logging configuration
 logger = logging.getLogger(__name__)
@@ -12,10 +15,10 @@ class TCGPlayerFetcher:
     """A class to fetch data from the TCGPlayer API."""
     def __init__(self, query, cache_duration_days=7):
         self.url = "https://mp-search-api.tcgplayer.com/v1/search/request"
-        self.cache_folder = "cache_data"
+        self.cache_folder = os.path.join(BASE_DIR, ".cache")
         self.query = query
         self.cache_duration_days = cache_duration_days
-        self.cache_file = f"{self.cache_folder}/{self.query}_cache.json"
+        self.cache_file = os.path.join(self.cache_folder, f"{self.query}_cache.json")
         self.params = {
             "q": query,
             "isList": "false",
@@ -63,6 +66,8 @@ class TCGPlayerFetcher:
             self.raw_data = cache_data["data"]
             self.df = pd.json_normalize(self.raw_data[0]['results'], max_level=1)
             self.df = self.df[self.df['productName'].str.contains(self.query, case=False, na=False)]
+            self.df.sort_values('lowestPrice', ascending=True, inplace=True)
+
 
     def _save_cache(self, raw_data):
         """Save raw data to the cache file."""
@@ -70,6 +75,7 @@ class TCGPlayerFetcher:
             "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             "data": raw_data
         }
+        print(self.cache_file)
         with open(self.cache_file, 'w') as f:
             json.dump(cache_data, f)
 
@@ -87,6 +93,7 @@ class TCGPlayerFetcher:
             self.raw_data = response_json['results']
             self.df = pd.json_normalize(self.raw_data[0]['results'], max_level=1)
             self.df = self.df[self.df['productName'].str.contains(self.query, case=False, na=False)]
+            self.df.sort_values('lowestPrice', ascending=True, inplace=True)
 
     def get_lowest_price(self):
         if self.df is not None:

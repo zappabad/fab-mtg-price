@@ -6,7 +6,7 @@ class CardDataSerializer(serializers.ModelSerializer):
         model = CardData
         fields = '__all__'
 
-class PriceDataSerializer(serializers.ModelSerializer):
+class PriceDataSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = PriceData
         fields = '__all__'
